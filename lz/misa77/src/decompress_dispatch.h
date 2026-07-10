@@ -24,4 +24,18 @@ namespace misa77
                                  uint64_t src_size,
                                  uint8_t* __restrict dst,
                                  uint64_t dst_cap);
+
+    // Bounds-checked variants (see safe_decompress_impl.h).
+    uint64_t decompress_safe_avx2(const uint8_t* __restrict src,
+                                  uint64_t src_size,
+                                  uint8_t* __restrict dst,
+                                  uint64_t dst_cap);
+    uint64_t decompress_safe_sse2(const uint8_t* __restrict src,
+                                  uint64_t src_size,
+                                  uint8_t* __restrict dst,
+                                  uint64_t dst_cap);
+    uint64_t decompress_safe_portable(const uint8_t* __restrict src,
+                                      uint64_t src_size,
+                                      uint8_t* __restrict dst,
+                                      uint64_t dst_cap);
 } // namespace misa77

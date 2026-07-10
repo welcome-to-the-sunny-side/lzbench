@@ -51,4 +51,19 @@ namespace misa77
 #endif
     }
 
+    // Bounds-checked variant: returns 0 on malformed input instead of UB.
+    uint64_t decompress_safe(const uint8_t* __restrict src,
+                             uint64_t src_size,
+                             uint8_t* __restrict dst,
+                             uint64_t dst_cap)
+    {
+#if defined(__x86_64__)
+        if (__builtin_cpu_supports("avx2"))
+            return decompress_safe_avx2(src, src_size, dst, dst_cap);
+        return decompress_safe_sse2(src, src_size, dst, dst_cap);
+#else
+        return decompress_safe_portable(src, src_size, dst, dst_cap);
+#endif
+    }
+
 } // namespace misa77

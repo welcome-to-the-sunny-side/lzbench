@@ -56,4 +56,11 @@ namespace misa77
                         uint64_t src_size,
                         uint8_t* __restrict dst,
                         uint64_t dst_cap);
+
+    // Bounds-checked variant of `decompress` (experimental): never reads or writes out of
+    // bounds on malformed input; returns 0 instead.
+    uint64_t decompress_safe(const uint8_t* __restrict src,
+                             uint64_t src_size,
+                             uint8_t* __restrict dst,
+                             uint64_t dst_cap);
 } // namespace misa77

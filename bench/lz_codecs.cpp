@@ -78,6 +78,12 @@ int64_t lzbench_misa77_decompress(char* inbuf, size_t insize, char* outbuf, size
 {
     return (int64_t)misa77::decompress((const uint8_t*)inbuf, insize, (uint8_t*)outbuf, outsize);
 }
+
+// Bounds-checked decoder (experimental); same streams, so compression is plain misa77.
+int64_t lzbench_misa77_safe_decompress(char* inbuf, size_t insize, char* outbuf, size_t outsize, codec_options_t* codec_options)
+{
+    return (int64_t)misa77::decompress_safe((const uint8_t*)inbuf, insize, (uint8_t*)outbuf, outsize);
+}
 #endif // BENCH_REMOVE_MISA77
 
 
