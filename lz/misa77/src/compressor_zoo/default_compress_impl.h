@@ -16,10 +16,10 @@
 
 namespace misa77
 {
-    static_assert(max_match_len >= 32);
-
     namespace default_detail
     {
+        using namespace light;
+
         constexpr uint32_t hash_top = 16;
         constexpr uint32_t hash_siz = 1 << hash_top;
         constexpr uint32_t hash_mul = 2654435761;
@@ -74,9 +74,12 @@ namespace misa77
                                    uint8_t* __restrict dst,
                                    uint64_t dst_cap)
     {
+        using namespace light;
         using namespace default_detail;
 
-        if (compress_bound(src_size) > dst_cap)
+        static_assert(max_match_len >= 32);
+
+        if (compress_bound(src_size, config()) > dst_cap)
             return 0;
 
         // Left pointer in the destination buffer (metadata and control bytes)

@@ -11,10 +11,11 @@
 
 namespace misa77
 {
+    // sanity check
     static_assert(vector_width == 32);
-    static_assert(hashtab_lag >= vector_width);
-    static_assert(vector_width >= max_match_len);
-    static_assert(literal_suffix >= dec_literal_copy);
+    static_assert(light::hashtab_lag >= vector_width);
+    static_assert(vector_width >= light::max_match_len);
+    static_assert(light::literal_suffix >= light::dec_literal_copy);
 
     // Returns the exact size (in bytes) of the file that the given compressed file will be
     // decompressed to.
@@ -22,7 +23,7 @@ namespace misa77
     // requires the size of the buffer to be >= 8.
     uint64_t decompressed_size(const uint8_t* src)
     {
-        return loadu8(src);
+        return loadu8(src) & 0x00FF'FFFF'FFFF'FFFF;
     }
 
     // Minimum size of buffer required to decompress a compressed file that corresponds to an
@@ -43,6 +44,10 @@ namespace misa77
                         uint64_t dst_cap,
                         dconfig dcfg)
     {
+        // no valid stream is shorter than 8 bytes (smallest is an empty file's bare header).
+        if (src_size < 8)
+            return 0;
+
 #if defined(__x86_64__)
         if (__builtin_cpu_supports("avx2"))
             return decompress_avx2(src, src_size, dst, dst_cap, dcfg);

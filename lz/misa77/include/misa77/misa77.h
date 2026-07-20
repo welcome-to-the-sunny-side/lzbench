@@ -8,7 +8,7 @@
 
 // Library version
 #define MISA77_VERSION_MAJOR 0
-#define MISA77_VERSION_MINOR 3
+#define MISA77_VERSION_MINOR 4
 #define MISA77_VERSION_PATCH 0
 #define MISA77_VERSION_NUMBER                                                                      \
     (MISA77_VERSION_MAJOR * 10000 + MISA77_VERSION_MINOR * 100 + MISA77_VERSION_PATCH)
@@ -20,17 +20,20 @@
 
 namespace misa77
 {
-    // `1e17`
-    inline constexpr uint64_t max_src_size = 100'000'000'000'000'000;
+    // `1e15`
+    inline constexpr uint64_t max_src_size = 1'000'000'000'000'000;
 
     // compressor config
     class config
     {
     public:
         // Only integers in [0, max_level] are valid levels
-        static constexpr uint8_t max_level = 1;
+        static constexpr uint8_t max_level = 2;
         static constexpr uint8_t default_level = 1;
         static_assert(default_level <= max_level);
+
+        // Light levels in [0, heavy_lb), heavy levels in [heavy_lb, max_level]
+        static constexpr uint8_t heavy_lb = 2;
 
         uint8_t level;
         config() : level(default_level) {}
@@ -49,12 +52,14 @@ namespace misa77
     };
 
     // Upper-bound on compressed size (in bytes) for any input of size `src_size` bytes.
-    // Use to size destination buffer.
+    // Use to size destination buffer. The bound depends on the format `cfg.level` emits, so
+    // pass the same `cfg` you will pass to `compress`.
     // PRECONDITION: `src_size <= max_src_size`
-    uint64_t compress_bound(uint64_t src_size);
+    uint64_t compress_bound(uint64_t src_size, config cfg);
 
     // Returns number of bytes written to `dst`, and 0 on failure.
-    // `cfg.level` selects the compressor to be used (all levels conform to the same format).
+    // `cfg.level` selects the compressor to be used. Levels below `config::heavy_lb` emit the
+    // light format, levels at or above it emit the heavy format.
     // PRECONDITION: `src_size <= max_src_size` and `0 <= cfg.level <= config::max_level`
     uint64_t compress(const uint8_t* __restrict src,
                       uint64_t src_size,
@@ -76,6 +81,8 @@ namespace misa77
     // Returns number of bytes written to `dst`, and 0 on failure.
     // PRECONDITION: (dcfg.safe = true) OR (`src` and `src_size` must correspond to a valid misa77
     // stream) Passing (dcfg.safe = false) and an invalid misa77 stream is UB!
+    // NOTE: safe decompression of the heavy format (streams from levels >= config::heavy_lb) is
+    // not supported yet; safe mode returns 0 for such streams without writing to `dst`.
     uint64_t decompress(const uint8_t* __restrict src,
                         uint64_t src_size,
                         uint8_t* __restrict dst,

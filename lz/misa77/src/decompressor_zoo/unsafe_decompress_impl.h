@@ -21,6 +21,8 @@ namespace misa77
                                     uint8_t* __restrict dst,
                                     uint64_t dst_cap)
     {
+        using namespace light;
+
         const uint64_t original_size = loadu8(src);
 
         if (dst_cap < original_size)

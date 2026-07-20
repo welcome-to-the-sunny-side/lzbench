@@ -6,8 +6,11 @@
 
 #include "compress_dispatch.h"
 #include "compressor_zoo/default_compress_impl.h"
+#include "compressor_zoo/heavy_compress_impl.h"
 #include "compressor_zoo/loose_compress_impl.h"
 #include "decompress_dispatch.h"
+#include "decompressor_zoo/heavy_safe_decompress_impl.h"
+#include "decompressor_zoo/heavy_unsafe_decompress_impl.h"
 #include "decompressor_zoo/safe_decompress_impl.h"
 #include "decompressor_zoo/unsafe_decompress_impl.h"
 #include "isa/lib_portable.h"
@@ -26,6 +29,8 @@ namespace misa77
             return loose_compress_impl<lib_portable>(src, src_size, dst, dst_cap);
         else if (cfg.level == 1)
             return default_compress_impl<lib_portable>(src, src_size, dst, dst_cap);
+        else if (cfg.level == 2)
+            return heavy_compress_impl<lib_portable>(src, src_size, dst, dst_cap);
         return 0;
     }
 
@@ -35,6 +40,15 @@ namespace misa77
                                  uint64_t dst_cap,
                                  dconfig dcfg)
     {
+        if ((uint64_t(1) << format_bit) & src[7])
+        {
+            // heavy
+            if (dcfg.safe)
+                return heavy_safe_decompress_impl<lib_portable>(src, src_size, dst, dst_cap);
+            return heavy_unsafe_decompress_impl<lib_portable>(src, src_size, dst, dst_cap);
+        }
+
+        // light
         if (dcfg.safe)
             return safe_decompress_impl<lib_portable>(src, src_size, dst, dst_cap);
         return unsafe_decompress_impl<lib_portable>(src, src_size, dst, dst_cap);

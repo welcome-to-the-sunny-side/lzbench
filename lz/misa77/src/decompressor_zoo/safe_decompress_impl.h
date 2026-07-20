@@ -21,6 +21,8 @@ namespace misa77
                                   uint8_t* __restrict dst,
                                   uint64_t dst_cap)
     {
+        using namespace light;
+
         // Header fields must exist
         if (src_size < 8) [[unlikely]]
             return 0;
