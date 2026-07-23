@@ -905,7 +905,7 @@ else
     MISA77_FILES += $(MISA77_DIR)/src/isa/target_portable.o
     # 64-bit x86 only:
     ifneq (,$(filter x86_64% amd64%,$(TARGET_ARCH)))
-        MISA77_FILES += $(MISA77_DIR)/src/isa/target_sse2.o $(MISA77_DIR)/src/isa/target_avx2.o
+        MISA77_FILES += $(MISA77_DIR)/src/isa/target_sse2.o
     endif
     # 64-bit ARM only
     ifneq (,$(filter aarch64% arm64%,$(TARGET_ARCH)))
@@ -913,9 +913,6 @@ else
     endif
 
     CMD_BUILD_MISA77 = @$(MKDIR) $(dir $@) && $(CXX) $(CXXFLAGS) -std=c++20 $(MISA77_INC) $(MISA77_FLAGS) $< -c -o $@
-
-    $(MISA77_DIR)/%_avx2.o: MISA77_FLAGS = -mavx2
-    $(MISA77_DIR)/%_avx2.o: $(MISA77_DIR)/%.cpp ; $(CMD_BUILD_MISA77)
 
     $(MISA77_DIR)/%_sse2.o: MISA77_FLAGS = -msse2
     $(MISA77_DIR)/%_sse2.o: $(MISA77_DIR)/%.cpp ; $(CMD_BUILD_MISA77)

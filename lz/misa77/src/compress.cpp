@@ -36,8 +36,6 @@ namespace misa77
             return 0;
 
 #if defined(__x86_64__)
-        if (__builtin_cpu_supports("avx2"))
-            return compress_avx2(src, src_size, dst, dst_cap, cfg);
         return compress_sse2(src, src_size, dst, dst_cap, cfg);
 #elif defined(__aarch64__)
         // NEON is guaranteed on Aarch64

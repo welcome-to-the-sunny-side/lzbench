@@ -122,7 +122,8 @@ For the CLI:
 
 - The `misa` CLI needs POSIX (Linux, macOS).
 
-Note: On x86-64, AVX2/SSE2 are selected at runtime. ARM has a NEON path.
+Note: This experimental branch has AVX2 support removed — x86-64 always uses the SSE2
+path. ARM has a NEON path.
 
 ## Building
 
